@@ -190,23 +190,34 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
                     child: child!,
                   );
                 },
-                child: GestureDetector(
-                  onTap: _toggle,
-                  onVerticalDragDown: _dragDown,
-                  onVerticalDragUpdate: _dragUpdate,
-                  onVerticalDragEnd: _dragEnd,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Container(
-                          key: _headerKey,
-                          child: widget.persistentHeader ?? Container()),
-                      Container(
-                        key: _contentKey,
-                        child: widget.expandableContent,
-                      ),
-                    ],
-                  ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Container(
+                      key: _headerKey,
+                      child: widget.persistentHeader != null
+                          ? GestureDetector(
+                              onTap: _toggle,
+                              onVerticalDragDown: _dragDown,
+                              onVerticalDragUpdate: _dragUpdate,
+                              onVerticalDragEnd: _dragEnd,
+                              child: widget.persistentHeader,
+                            )
+                          : Container(),
+                    ),
+                    Container(
+                      key: _contentKey,
+                      child: widget.persistentHeader == null
+                          ? GestureDetector(
+                              onTap: _toggle,
+                              onVerticalDragDown: _dragDown,
+                              onVerticalDragUpdate: _dragUpdate,
+                              onVerticalDragEnd: _dragEnd,
+                              child: widget.expandableContent,
+                            )
+                          : widget.expandableContent,
+                    ),
+                  ],
                 ),
               )
             ],
@@ -292,12 +303,10 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
 
   void _toggle() {
     if (widget.enableToggle) {
+      _callCallbacks = true;
       if (expansionStatus == ExpansionStatus.expanded) {
-        _callCallbacks = true;
         _animateToBottom();
-      }
-      if (expansionStatus == ExpansionStatus.contracted) {
-        _callCallbacks = true;
+      } else {
         _animateToTop();
       }
     }
